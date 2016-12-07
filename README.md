@@ -9,6 +9,13 @@ dateTerm:
   empty: True                             # Empty values are allowed
 ```
 
+## Contributors
+
+* [Peter Desmet](https://github.com/peterdesmet)
+* [Stijn Van Hoey](https://github.com/stijnvanhoey)
+* [Christian Gendreau](https://github.com/cgendreau)
+* [Dimitri Brosens](https://github.com/DimEvil)
+
 ## License
 
 [MIT License](LICENSE)
