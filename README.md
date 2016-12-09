@@ -9,6 +9,10 @@ dateTerm:
   empty: True                             # Empty values are allowed
 ```
 
+## Documentation
+
+* [Specification](docs/specification.md)
+
 ## Contributors
 
 * [Peter Desmet](https://github.com/peterdesmet)
