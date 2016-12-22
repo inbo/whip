@@ -1,4 +1,4 @@
-# Specification
+# Specifications
 
 ## Validation
 
