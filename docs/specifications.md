@@ -1,47 +1,54 @@
-# Specifications
+# DwCASpecifications
 
 ## Validation
 
-Tests are performed per row, per term (field) and are independent of each other, i.e. they can be performed in any order. Which tests to perform is defined in a settings file ([example](settings.yaml)), which has the following syntax:
+When performing an evaluation, the evaluation of the DwCA specifications are performed per row, per term (field) and are independent of each other. Which tests to perform is defined in a settings file (e.g. settings.yaml), which has the following syntax:
 
 ```YAML
 Term 1:
-  Test 1
-  Test 2
+  Specification 1
+  Specification 2
 
 Term 2:
-  Test 1
-  Test 3
+  Specification 1
+  Specification 3
 ```
 
-All validation information will be stored in a dictionary object, referring to the term, the type of test, and some logging information, in order to provide the user with feedback on possible improvements. 
+The set of specifications provide the data descriptions of each of the terms (i.e. columns). These rules should be tool (software) independent, but anyone can develop software or applications that are able to understand these specification files and executes tests to evaluate a data set to these specification files.
 
-* Number of tests that failed or the record IDs of those.
-* Unique values that failed
+In order to provide maximum interoperability amongst different developments, a common error description (providing information about the individual failures) is proposed. The validation information will be stored as json, referring to the line of the data set, the term and the type of test as a minimal exchangeable output format:
 
-```python
+```json
 {
-    Term: {
-        TestType: {
-            "ids": [id1, id2,...],
-        }
-    }
+lineID1:
+    {
+    term1: [specification failure 1,
+            specification failure 2,
+            ...],
+    term2: [specification failure 1,
+            specification failure 2,
+            ...],
+    ...},
+lineID2: {...},
+...
 }
 ```
 
-The resulting object will be processed by a report creator, which provides an overview of the current problems for each of the performed tests.
+This `json` object can be processed by a report creator, which provides an overview of the current problems for each of the performed tests. By having a common error description model, different reporting styles and tools can easily be exchanged.
 
-## Test types
+Hence, development of tools based on these specifications can be split into two categories:
+* Evaluation tools: from specification file (settings.yaml) to error reporting (json error description object)
+* Reporting tools: from error reporting (json error description object) to any kind of user-friendly summary of the data set disagreements to the specification file
 
-Cerberus already provide a set of [validation rules](http://docs.python-cerberus.org/en/stable/usage.html#validation-rules), which can be used and extended for the validator case. In the following list, the rules available in the DwcaValidator are enlisted.
+## Specification rules
+
+The current proposed set of rules are:
 
 * [type](#type)
-* [length](#length)
 * [minlength](#minlength)
 * [maxlength](#maxlength)
 * [min](#min)
 * [max](#max)
-* [equals](#equals)
 * [allowed](#allowed)
 * [empty](#empty)
 * [mindate](#mindate)
@@ -49,36 +56,24 @@ Cerberus already provide a set of [validation rules](http://docs.python-cerberus
 * [numberformat](#numberformat)
 * [dateformat](#dateformat)
 * [regex](#regex)
-* [listvalues](#listvalues)
 * [delimitedvalues](#delimitedvalues)
 * [if](#if)
 
 ### type
 
-*(partly cerberus supported)*
-
 Does the data conform to a specific field type?
 
-Cerberus supports following dtypes, which are also supported by the DWCA validator:
+The defined DwCA specifications `type` provides a set of options to test the data type property of the field:
 
 * string
 * integer
 * float
 * number (integer or float)
 * boolean
-
-Following Cerberus dtypes are not supported by the Dwca Validator:
-
-* dict (formally collections.mapping)
-* list (formally collections.sequence, excluding strings)
-* set
-
-Following dtypes are added to the Dwca Validator, not supported by Cerberus:
-
 * url
 * json
 
-The DWCA Validator uses a custom rule for dates, embedded in dateformat.
+**Remark** datetime or date is not included as a possible `type` specification, as this is provided as a separate rule for dates, embedded in the test [#dateformat](#dateformat).
 
 ```YAML
 # Expects: string
@@ -92,7 +87,7 @@ type: json
 type: url
 ```
 
-It is important to understand that the DwcaReader will read all fields as string types initially. When no `type` validator is added, the value will be interpreted and tested as a string value. By incorporating a `type` validator, DwcaValidator will first try to interpret the value as the type to test it for (e.g. integer, float). When succeeded, the other tests will be applied on the interpreted value (integer, float).
+It is important to understand that the any tool using the specification file should xpects all incoming fields as string types initially (so no automatic coercing or interpretation of data types. When no `type` validator is added, the value will be interpreted and tested as a string value. By incorporating a `type` specification, a validation tool will first try to interpret the value as the type to test it for (e.g. integer, float). When succeeded, the other tests will be applied on the interpreted value (integer, float).
 
 ### length
 
@@ -299,7 +294,7 @@ Does the data match a specific regex expression?
 regex: # No example yet
 ```
 
-### listvalues 
+### listvalues
 
 **proposal, not implemented yet**
 
@@ -329,7 +324,7 @@ delimitedvalues:
   minlength: 8
   maxlength: 8
   min: 1
-  max: 1 
+  max: 1
   numberformat: .3f
   regex: ...
   listvalues: true  # List unique delimited values across all records - TODO
@@ -363,12 +358,19 @@ if:
       maxlength: 6
 ```
 
-## Cerberus other rules
+## Remarks
 
-### readonly
+### min/max combination
+In order to keep the number of rules to a minimum,  it is decided to not have a separate test `equals`, as this can easily be achieved by combining a `min` and `max`  test:
 
-There is no use-case to apply this rule within the context of the DwcaValidator
+```
+equals: 10
+```
+is equal to this test description:
+```
+min: 10
+max: 10
+```
 
-### nullable
+The same is true for the specification  `length`, which is a combination of `minlength` and  `maxlength`.
 
-As the DwC is always providing None values as empty strings, the nullable test is bypassed (all logic should be in `empty` rule.
