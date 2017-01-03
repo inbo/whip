@@ -1,4 +1,4 @@
-# DwCASpecifications
+# DwCA Specifications
 
 ## Validation
 
@@ -56,6 +56,9 @@ The current proposed set of rules are:
 * [numberformat](#numberformat)
 * [dateformat](#dateformat)
 * [regex](#regex)
+
+The environment wrappers are:
+
 * [delimitedvalues](#delimitedvalues)
 * [if](#if)
 
@@ -73,7 +76,7 @@ The defined DwCA specifications `type` provides a set of options to test the dat
 * url
 * json
 
-**Remark** datetime or date is not included as an available `type` specification, as date formats are provided as a separate rule for dates, embedded in the test [#dateformat](#dateformat).
+**Remark** datetime or date is not included as an available `type` specification, as date formats are provided as a separate rule for dates, embedded in the test [dateformat](#dateformat).
 
 ```YAML
 # Expects: string
@@ -302,7 +305,9 @@ if:
       maxlength: 6
 ```
 
-## Order
+## Remarks
+
+### Order
 Testing some of these specifications do rely on the presence or properties of other specifications, e.g. the interpretation of a `numberformat` is only possible if the appropriate type is present, as defined by a `type` specification. Instead of implicitly deriving this information (i.e. automatically testing for a number data type when  a `min`, `max` or `numberformat`), this should be explicitly defined by the user by adding a `type` specification. 
 
 The priority in the order of testing the different specifications, is as follows:
@@ -312,8 +317,6 @@ The priority in the order of testing the different specifications, is as follows
 The `if` and `delimitedvalues` specifications are providing an environment fr which the specification need to be tested multiple times (taking into account this order for the individual tests):
 * `if: First, the testing of the condition (does the *if* condition apply?) and secondly - if true - , the evaluation of the conditional specification of the term itself
 * `delimitedvalues`: The defined specifications is evaluated for each of the individual terms as split by the delimiter, taking into account the order for each test individually.
-
-## Remarks
 
 ### min/max combination
 In order to keep the number of rules to a minimum,  it is decided to not have a separate test `equals`, as this can easily be achieved by combining a `min` and `max`  test:
