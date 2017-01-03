@@ -2,7 +2,7 @@
 
 ## Validation
 
-When performing an evaluation, the evaluation of the DwCA specifications are performed per row, per term (field) and are independent of each other. Which tests to perform is defined in a settings file (e.g. settings.yaml), which has the following syntax:
+When performing an evaluation, the evaluation of the DwCA specifications are performed per row, per term (field) and act independent of each other (however, some test combinations require an order in the evaluation, see [specification order](#order) section). Which tests to perform is defined in a settings file (e.g. settings.yaml), which has the following syntax:
 
 ```YAML
 Term 1:
@@ -14,7 +14,7 @@ Term 2:
   Specification 3
 ```
 
-The set of specifications provide the data descriptions of each of the terms (i.e. columns). These rules should be tool (software) independent, but anyone can develop software or applications that are able to understand these specification files and executes tests to evaluate a data set to these specification files.
+The set of specifications for each term describes the data characteristics of each of the terms (i.e. columns). These rules should be tool (software) independent, but anyone can develop software or applications that are able to understand these specification files and executes tests to evaluate a data against these specification files.
 
 In order to provide maximum interoperability amongst different developments, a common error description (providing information about the individual failures) is proposed. The validation information will be stored as json, referring to the line of the data set, the term and the type of test as a minimal exchangeable output format:
 
@@ -73,7 +73,7 @@ The defined DwCA specifications `type` provides a set of options to test the dat
 * url
 * json
 
-**Remark** datetime or date is not included as a possible `type` specification, as this is provided as a separate rule for dates, embedded in the test [#dateformat](#dateformat).
+**Remark** datetime or date is not included as an available `type` specification, as date formats are provided as a separate rule for dates, embedded in the test [#dateformat](#dateformat).
 
 ```YAML
 # Expects: string
@@ -87,39 +87,10 @@ type: json
 type: url
 ```
 
-It is important to understand that the any tool using the specification file should xpects all incoming fields as string types initially (so no automatic coercing or interpretation of data types. When no `type` validator is added, the value will be interpreted and tested as a string value. By incorporating a `type` specification, a validation tool will first try to interpret the value as the type to test it for (e.g. integer, float). When succeeded, the other tests will be applied on the interpreted value (integer, float).
+It is important to understand that any tool using the specification file should expects all incoming fields as string types initially (so no automatic coercing or interpretation of data types). When no `type` specification is applied, the value will be interpreted and tested as a string value. By incorporating a `type` specification, the validation tool will **first** interpret the value as the defined `type` to test it for (e.g. integer, float). When succeeded, the other tests will be applied on the interpreted value (integer, float).
 
-### length
-
-Is the length of the data string equal to the given value?
-
-```YAML
-# Expects: integer
-# Records without data: are ignored
-# Records of wrong data type: only active with strings
-
-length: 8  # Character length is equal to 8
-```
-
-**Remark:**
-
-The behaviour of length (and also `minlength` and `maxlength`) depends on the usage of the `length` validation in combination with the `type` validation or not. When no `type` validation is added (or tests for string, which is default in the Dwcareader), the length will interpret the field as string:
-
-```YAML
-maxlength: 2  
-type : string  
-```
-will invoke an error for the field : `{'individualCount' : '100'}`. However, when requiring an integer value:
-
-```YAML
-maxlength: 2
-type : integer
-```
-the field `{'individualCount' : '100'}` will be converted to `{'individualCount' : 100}` (100 as integer) and `length` will ignore the integer. It makes more sense to test this with the `min` and `max` validators (see further).
 
 ### minlength
-
-*(cerberus supported)*
 
 Is the length of the data string larger than the given value (inclusive the value itself)?
 
@@ -133,8 +104,6 @@ minlength: 8  # Character length is larger than 8
 
 ### maxlength
 
-*(cerberus supported)*
-
 Is the length of the data string smaller than the given value (inclusive the value itself)?
 
 ```YAML
@@ -145,11 +114,25 @@ Is the length of the data string smaller than the given value (inclusive the val
 maxlength: 20  # Character length is smaller than 20
 ```
 
+**Remark:**
+
+The behaviour of length (`minlength` and `maxlength`) depends on the usage of the `length` validation in combination with the `type` validation or not. When no `type` validation is added (or tests for string, which is default), the length will interpret the field as string:
+
+```YAML
+maxlength: 2  
+type : string  
+```
+will invoke an error for the field : `{'individualCount' : '100'}`. However, when requiring an integer value:
+
+```YAML
+maxlength: 2
+type : integer
+```
+the field `{'individualCount' : '100'}` will be converted to `{'individualCount' : 100}` (100 as integer) and `length` will ignore the integer. It makes more sense to test this with the `min` and `max` validators (see further).
+
 ### min
 
-*(cerberus supported)*
-
-Minimum value allowed for any types that implement comparison operators.
+Minimum value allowed for integer/float and number formats. Whereas this works for different numeric types, evaluation is done on a float representation.
 
 ```YAML
 # Expects: int/float; values will be compared as floats
@@ -164,11 +147,11 @@ min: 20     # integer
 
 It is important to combine the test with an appropriate data type validation to enable the test when using numeric values
 
+The usage is of particular interest if values should be accepted, but the decimal precision is not important. For example: 0.75 will also accept 0.750 and 200 also 200.0. When the value need to be exactly the same, the usage of `allowed` (works on strings) is advisable (see next).
+
 ### max
 
-*(cerberus supported)*
-
-Maximum value allowed for any types that implement comparison operators.
+Maximum value allowed for integer/float and number formats. Whereas this works for different numeric types, evaluation is done on a float representation.
 
 ```YAML
 # Expects: int/float; values will be compared as floats
@@ -183,26 +166,9 @@ max: 200     # integer
 
 It is important to combine the test with an appropriate data type validation to enable the test when using numeric values
 
-### equals
-
-Does the data value equal to a given numerical value?
-
-```YAML
-# Expects: int/float; values will be compared as floats
-# Records without data: are ignored
-# Records of wrong data type: only active with integer or float (data types are tested separately with `type`)
-
-equals: 0.75     # float
-equals: 200     # integer
-```
-
-**Remark**
-
-This test is used for numerical values and should be combined with a `type` test to activate the test. The usage is of particular interest if values should be accepted, but the decimal precision is not important. For example: 0.75 will also accept 0.750 and 200 also 200.0. When the value need to be completely the same, the usage of `allowed` (works on strings) is advisable (see next).
+The usage is of particular interest if values should be accepted, but the decimal precision is not important. For example: 0.75 will also accept 0.750 and 200 also 200.0. When the value need to be exactly the same, the usage of `allowed` (works on strings) is advisable (see next).
 
 ### allowed
-
-*(cerberus supported)*
 
 Does the data is the same sequence of characters?
 
@@ -217,7 +183,7 @@ allowed: [male, female] # male or female
 
 ### empty
 
-Empty values are default not accepted. If an empty values should be present for a particular field, `empty` can be put to `True`
+Empty values are default not accepted. If empty values are allowed for a particular field, `empty` can be put to `True`. Hence, this is a shortcut to `allowed: ['']`.
 
 ```YAML
 # Expects: boolean
@@ -228,7 +194,7 @@ empty: True
 
 ### mindate
 
-Does the date/datetime objects fall before a given date?
+Does the date/datetime object happens before a given date?
 
 ```YAML
 # Expects: date string
@@ -241,7 +207,7 @@ mindate: 2014-10-20 # After 20 October 2014
 
 ### maxdate
 
-Does the date/datetime objects fall after a given date?
+Does the date/datetime objects happens after a given date?
 
 ```YAML
 # Expects: date string
@@ -266,10 +232,6 @@ numberformat: '3.5' # 3 digits at the left side of the decimal and 5 decimal dig
 numberformat: '4.' # 4 digits at the left side, right side not specified, e.g. 1234., 1234.12 or also the integer 1234
 ```
 
-**Remark**
-
-Float numbers are stored in a double-precision floating-point format. Hence, the check for the numberformat is done before the actual conversion to float numbers in order to do the other tests (e.g. min, max,...)
-
 ### dateformat
 
 Does the data conform to a specific date format? Possibilities provided at
@@ -282,8 +244,6 @@ dateformat:['%Y-%m-%d/%Y-%m-%d'] # Will match a date range
 
 ### regex
 
-*(cerberus supported)*
-
 Does the data match a specific regex expression?
 
 ```YAML
@@ -294,24 +254,9 @@ Does the data match a specific regex expression?
 regex: # No example yet
 ```
 
-### listvalues
-
-**proposal, not implemented yet**
-
-Not a test, will just list all unique values in the output.
-
-```YAML
-# Expects: boolean
-# Records without data: are ignored
-# Records of wrong data type: all considered strings
-
-listvalues: true
-listvalues: false # Default. Ignored
-```
-
 ### delimitedvalues
 
-Subfunction to work on delimited data within a field. Will alter the functionality off all functions to work with the delimited data instead of the whole string. Requires `delimiter`.
+Environment wrapper to work on delimited data within a field. Will alter the evaluation of all specifications to work with the delimited data instead of the whole string. Requires `delimiter`.
 
 ```YAML
 delimitedvalues:
@@ -329,12 +274,11 @@ delimitedvalues:
   regex: ...
   listvalues: true  # List unique delimited values across all records - TODO
   dateformat: ...   # Use datevalues subfunction
-  delimitedvalues: ...  # Syntax error
 ```
 
 ### if
 
-Subfunction to perform tests based on the tests on another term. All tests on the other term must succeed (i.e. they are combined with `AND`) before test are performed.
+Environment wrapper to define condition specifications, i.e. specifications of a term are  based on the specifications of another term. All conditional tests on the other term must succeed (i.e. they are combined with `AND`) before the specifications are evaluated.
 
 ```YAML
 if:
@@ -357,6 +301,17 @@ if:
           type: integer
       maxlength: 6
 ```
+
+## Order
+Testing some of these specifications do rely on the presence or properties of other specifications, e.g. the interpretation of a `numberformat` is only possible if the appropriate type is present, as defined by a `type` specification. Instead of implicitly deriving this information (i.e. automatically testing for a number data type when  a `min`, `max` or `numberformat`), this should be explicitly defined by the user by adding a `type` specification. 
+
+The priority in the order of testing the different specifications, is as follows:
+
+**empty > type > other specifications**
+
+The `if` and `delimitedvalues` specifications are providing an environment fr which the specification need to be tested multiple times (taking into account this order for the individual tests):
+* `if: First, the testing of the condition (does the *if* condition apply?) and secondly - if true - , the evaluation of the conditional specification of the term itself
+* `delimitedvalues`: The defined specifications is evaluated for each of the individual terms as split by the delimiter, taking into account the order for each test individually.
 
 ## Remarks
 
