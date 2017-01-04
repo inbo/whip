@@ -13,7 +13,7 @@ my_date_field:
 
 ## Documentation
 
-* [Specification](docs/specification.md)
+* [Syntax](docs/syntax.md)
 
 ## Contributors
 
