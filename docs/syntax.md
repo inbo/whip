@@ -25,33 +25,33 @@ This document specifies how to express data specifications in whip. How meta! :m
 
 ## General
 
-Whip specifications are expressed in [YAML](https://en.wikipedia.org/wiki/YAML).
+Whip specifications are expressed in [YAML](https://en.wikipedia.org/wiki/YAML), a human and machine-readable data serialization language.
 
 ### A single specification
 
-A specification in whip describes what you want a data value in a single field to adhere to. For example, to express that the field `date` should always contain the literal value `2016-12-06`, you write:
+A specification in whip describes what a data value in a field should adhere to. For example, to express that the field `age` should always contain the literal value `33`, use:
 
 ```yaml
-date:                   # name of the field
-  allowed: 2016-12-06   # specification
+age:                       # Name of the field
+  allowed: 33              # Specification
 ```
 
 ### Multiple specifications
 
-You can define multiple specifications for a single field. For example, if you want to express that `date` values should fall between `2016-01-01` and `2016-12-31`, you write:
+Multiple specifications can be defined for a field. For example, to express that `age` values should fall between `9` and `99`, use:
 
 ```yaml
-date:
-  mindate: 2016-01-01
-  maxdate: 2016-12-31
+age:
+  min: 9
+  max: 99
 ```
 
 To add specifications for another field, just add the name of the field and its specification(s):
 
 ```yaml
-date:
-  mindate: 2016-01-01
-  maxdate: 2016-12-31
+age:
+  min: 9
+  max: 99
 
 sex:
   allowed: [male, female]
