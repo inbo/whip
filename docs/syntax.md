@@ -7,18 +7,18 @@ This document specifies how to express data specifications in whip. How meta! :m
     * [Multiple specifications](#multiple-specifications)
     * [A specification file](#specification-file)
 * [Specification types](#specification-types)
-    * [type](#type)
+    * [allowed](#allowed)
     * [minlength](#minlength)
     * [maxlength](#maxlength)
+    * [stringformat](#stringformat)
+    * [regex](#regex)
     * [min](#min)
     * [max](#max)
-    * [allowed](#allowed)
-    * [empty](#empty)
+    * [numberformat](#numberformat)
     * [mindate](#mindate)
     * [maxdate](#maxdate)
-    * [numberformat](#numberformat)
     * [dateformat](#dateformat)
-    * [regex](#regex)
+    * [empty](#empty)
 * [Defining scope](#defining-scope)
     * [delimitedvalues](#delimitedvalues)
     * [if](#if)
@@ -63,50 +63,18 @@ Together, all these field/term-based specifications form a specification file (e
 
 ## Specification types
 
-### type (deprecated)
+### allowed
 
-Tests if a value is of a specific data type:
+Does the data is the same sequence of characters?
 
-```yaml
-myNumberField:
-  type: number          # Will accept 2 or 2.1 or "2", but not "Two"
+```YAML
+# Expects: list with one or more strings
+# Records without data: are ignored
+# Records of wrong data type: all considered strings
+
+allowed: [male]
+allowed: [male, female] # male or female
 ```
-
-The options for `type` are:
-
-```yaml
-myField:
-  type: string
-  type: integer
-  type: float
-  type: number           # An integer or a float
-  type: boolean
-  type: url
-  type: json
-
-# Obviously, you wouldn't add all these type specifications for a single field
-```
-
-Remarks:
-
-* A `date` or `datetime` option is not included. See [dateformat](#dateformat) instead.
-* See the examples below for how certain values are interpreted.
-
-Example | string | integer | float | number | boolean | url | json
---- | --- | --- | --- | --- | --- | --- | --- 
-`Hello World!` | :heavy_check_mark: | :x: | :x: | :x: | :x: | :x: | :x:
-`1` | :heavy_check_mark: | :heavy_check_mark: | :x: | :heavy_check_mark: | :heavy_check_mark: | :x: | :x:
-`1.0` | :heavy_check_mark: | :x: | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | :x:
-`1.3` | :heavy_check_mark: | :x: | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | :x:
-`0` | :heavy_check_mark: | :heavy_check_mark: | :x: | :heavy_check_mark: | :heavy_check_mark: | :x: | :x:
-`True` | :heavy_check_mark: | :x: | :x: | :x: | :heavy_check_mark: | :x: | :x:
-`Yes` | :heavy_check_mark: | :x: | :x: | :x: | :x: | :x: | :x:
-`http://github.com/inbo/whip` | :heavy_check_mark: | :x: | :x: | :x: | :x: | :heavy_check_mark: | :x:
-`{"length": 2.0}` | :heavy_check_mark: | :x: | :x: | :x: | :x: | :x: | :heavy_check_mark:
-`Zero` | :heavy_check_mark: | :x: | :x: | :x: | :x: | :x: | :x:
-`Null` | :heavy_check_mark: | :x: | :x: | :x: | :x: | :x: | :x:
-`""` | :heavy_check_mark: | :x: | :x: | :x: | :x: | :x: | :x:
-empty value | :heavy_check_mark: | :x: | :x: | :x: | :x: | :x: | :x:
 
 ### minlength
 
@@ -148,6 +116,20 @@ type : integer
 ```
 the field `{'individualCount' : '100'}` will be converted to `{'individualCount' : 100}` (100 as integer) and `length` will ignore the integer. It makes more sense to test this with the `min` and `max` validators (see further).
 
+### stringformat
+
+### regex
+
+Does the data match a specific regex expression?
+
+```YAML
+# Expects: regex expression
+# Records without data: are ignored!
+# Records of wrong data type: all considered strings
+
+regex: # No example yet
+```
+
 ### min
 
 Minimum value allowed for integer/float and number formats. Whereas this works for different numeric types, evaluation is done on a float representation.
@@ -186,28 +168,18 @@ It is important to combine the test with an appropriate data type validation to 
 
 The usage is of particular interest if values should be accepted, but the decimal precision is not important. For example: 0.75 will also accept 0.750 and 200 also 200.0. When the value need to be exactly the same, the usage of `allowed` (works on strings) is advisable (see next).
 
-### allowed
+### numberformat
 
-Does the data is the same sequence of characters?
+Does the float number conform to a specific precision format?
 
 ```YAML
-# Expects: list with one or more strings
+# Expects: string and need to be combined with `type` : float validator
 # Records without data: are ignored
-# Records of wrong data type: all considered strings
+# Records of wrong data type: fail test
 
-allowed: [male]
-allowed: [male, female] # male or female
-```
-
-### empty
-
-Empty values are default not accepted. If empty values are allowed for a particular field, `empty` can be put to `True`. Hence, this is a shortcut to `allowed: ['']`.
-
-```YAML
-# Expects: boolean
-# Records of wrong data type: only considered strings (default in Dwc)
-
-empty: True
+numberformat: '.5' # 5 decimals, left side of the decimal not specified, e.g. 1.12345 or 12.12345
+numberformat: '3.5' # 3 digits at the left side of the decimal and 5 decimal digits, e.g. 123.12345
+numberformat: '4.' # 4 digits at the left side, right side not specified, e.g. 1234., 1234.12 or also the integer 1234
 ```
 
 ### mindate
@@ -236,20 +208,6 @@ maxdate: 1830-01-01  # After 1 Jan 1830
 maxdate: 2014-10-20 # After 20 October 2014
 ```
 
-### numberformat
-
-Does the float number conform to a specific precision format?
-
-```YAML
-# Expects: string and need to be combined with `type` : float validator
-# Records without data: are ignored
-# Records of wrong data type: fail test
-
-numberformat: '.5' # 5 decimals, left side of the decimal not specified, e.g. 1.12345 or 12.12345
-numberformat: '3.5' # 3 digits at the left side of the decimal and 5 decimal digits, e.g. 123.12345
-numberformat: '4.' # 4 digits at the left side, right side not specified, e.g. 1234., 1234.12 or also the integer 1234
-```
-
 ### dateformat
 
 Does the data conform to a specific date format? Possibilities provided at
@@ -260,16 +218,15 @@ dateformat:['%Y-%m-%d', '%Y-%m', '%Y'] # Will match specific date formats
 dateformat:['%Y-%m-%d/%Y-%m-%d'] # Will match a date range
 ```
 
-### regex
+### empty
 
-Does the data match a specific regex expression?
+Empty values are default not accepted. If empty values are allowed for a particular field, `empty` can be put to `True`. Hence, this is a shortcut to `allowed: ['']`.
 
 ```YAML
-# Expects: regex expression
-# Records without data: are ignored!
-# Records of wrong data type: all considered strings
+# Expects: boolean
+# Records of wrong data type: only considered strings (default in Dwc)
 
-regex: # No example yet
+empty: True
 ```
 
 ## Defining scope
