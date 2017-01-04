@@ -59,7 +59,7 @@ sex:
 
 ### A specification file
 
-Together, all these field/term-based specifications form a specification file (e.g. `my_specifications.yaml`), which can be used by a whip validator to test how well data meets certain specifications. In other words, you test if your data cracks under your whip, which can range from a feather :sweat_smile: to a chain whip :scream:.
+Together, all these field/term-based specifications form a specification file (e.g. `my_specifications.yaml`), which can be used by a validator to test how well data meets certain specifications.
 
 ## Specification types
 
