@@ -65,56 +65,46 @@ Together, all these field/term-based specifications form a specification file (e
 
 ### allowed
 
-Does the data is the same sequence of characters?
+Tests if a value is the same as an allowed value or belongs to a list of allowed values:
 
-```YAML
-# Expects: list with one or more strings
-# Records without data: are ignored
-# Records of wrong data type: all considered strings
+```yaml
+sex:
+  allowed: male             # A single allowed value. Will accept "male", but 
+                            # not "Male" (case-sensitive) or anything else.
+  
+  allowed: "male"           # Same as above
+  allowed: [male]           # Same as above
 
-allowed: [male]
-allowed: [male, female] # male or female
+  allowed: [male, female]   # A list of allowed values: separate by commas and 
+                            # wrap in square brackets. Will accept "male" or 
+                            # "female".
+
+  allowed: [male, female, "male, female"] # Use quotes to escape commas and 
+                            # whitespace. Will accept "male", "female" or 
+                            # "male, female", but not "male,female" (no 
+                            # whitespace) or "female, male".
 ```
+
+Note: To pass, a value needs to be literally the same (= same sequence of characters) as (one of) the allowed value(s). This means that `allowed` is sensitive to case and whitespace.
 
 ### minlength
 
-Is the length of the data string larger than the given value (inclusive the value itself)?
+Tests if a value has a minimum number of characters:
 
-```YAML
-# Expects: integer
-# Records without data: are ignored
-# Records of wrong data type: only active with strings
-
-minlength: 8  # Character length is larger than 8
+```yaml
+postal_code:
+  minlength: 4              # Will accept "9050" and "B-9050", but not "905".
 ```
 
 ### maxlength
 
-Is the length of the data string smaller than the given value (inclusive the value itself)?
+Tests if a value has a maximum number of characters:
 
-```YAML
-# Expects: integer
-# Records without data: are ignored
-# Records of wrong data type: only active with strings
-
-maxlength: 20  # Character length is smaller than 20
+```yaml
+license_plate:
+  maxlength: 6              # Will accept "AF8934" and "AF893", 
+                            # but not "AF8-934" (note the dash)
 ```
-
-**Remark:**
-
-The behaviour of length (`minlength` and `maxlength`) depends on the usage of the `length` validation in combination with the `type` validation or not. When no `type` validation is added (or tests for string, which is default), the length will interpret the field as string:
-
-```YAML
-maxlength: 2  
-type : string  
-```
-will invoke an error for the field : `{'individualCount' : '100'}`. However, when requiring an integer value:
-
-```YAML
-maxlength: 2
-type : integer
-```
-the field `{'individualCount' : '100'}` will be converted to `{'individualCount' : 100}` (100 as integer) and `length` will ignore the integer. It makes more sense to test this with the `min` and `max` validators (see further).
 
 ### stringformat
 
