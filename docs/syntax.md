@@ -1,97 +1,112 @@
-# DwCA Specifications
+# Whip syntax
 
-## Validation
+This document specifies how to express data specifications in whip. How meta! :metal:
 
-When performing an evaluation, the evaluation of the DwCA specifications are performed per row, per term (field) and act independent of each other (however, some test combinations require an order in the evaluation, see [specification order](#order) section). Which tests to perform is defined in a settings file (e.g. settings.yaml), which has the following syntax:
+* [General](#general)
+    * [A single specification](#a-single-specification)
+    * [Multiple specifications](#multiple-specifications)
+    * [A specification file](#specification-file)
+* [Specification types](#specification-types)
+    * [type](#type)
+    * [minlength](#minlength)
+    * [maxlength](#maxlength)
+    * [min](#min)
+    * [max](#max)
+    * [allowed](#allowed)
+    * [empty](#empty)
+    * [mindate](#mindate)
+    * [maxdate](#maxdate)
+    * [numberformat](#numberformat)
+    * [dateformat](#dateformat)
+    * [regex](#regex)
+* [Defining scope](#defining-scope)
+    * [delimitedvalues](#delimitedvalues)
+    * [if](#if)
 
-```YAML
-Term 1:
-  Specification 1
-  Specification 2
+## General
 
-Term 2:
-  Specification 1
-  Specification 3
+Whip specifications are expressed in [YAML](https://en.wikipedia.org/wiki/YAML).
+
+### A single specification
+
+A specification in whip describes what you want a data value in a single field to adhere to. For example, to express that the field `date` should always contain the literal value `2016-12-06`, you write:
+
+```yaml
+date:                   # name of the field
+  allowed: 2016-12-06   # specification
 ```
 
-The set of specifications for each term describes the data characteristics of each of the terms (i.e. columns). These rules should be tool (software) independent, but anyone can develop software or applications that are able to understand these specification files and executes tests to evaluate a data against these specification files.
+### Multiple specifications
 
-In order to provide maximum interoperability amongst different developments, a common error description (providing information about the individual failures) is proposed. The validation information will be stored as json, referring to the line of the data set, the term and the type of test as a minimal exchangeable output format:
+You can define multiple specifications for a single field. For example, if you want to express that `date` values should fall between `2016-01-01` and `2016-12-31`, you write:
 
-```json
-{
-lineID1:
-    {
-    term1: [specification failure 1,
-            specification failure 2,
-            ...],
-    term2: [specification failure 1,
-            specification failure 2,
-            ...],
-    ...},
-lineID2: {...},
-...
-}
+```yaml
+date:
+  mindate: 2016-01-01
+  maxdate: 2016-12-31
 ```
 
-This `json` object can be processed by a report creator, which provides an overview of the current problems for each of the performed tests. By having a common error description model, different reporting styles and tools can easily be exchanged.
+To add specifications for another field, just add the name of the field and its specification(s):
 
-Hence, development of tools based on these specifications can be split into two categories:
-* Evaluation tools: from specification file (settings.yaml) to error reporting (json error description object)
-* Reporting tools: from error reporting (json error description object) to any kind of user-friendly summary of the data set disagreements to the specification file
+```yaml
+date:
+  mindate: 2016-01-01
+  maxdate: 2016-12-31
 
-## Specification rules
-
-The current proposed set of rules are:
-
-* [type](#type)
-* [minlength](#minlength)
-* [maxlength](#maxlength)
-* [min](#min)
-* [max](#max)
-* [allowed](#allowed)
-* [empty](#empty)
-* [mindate](#mindate)
-* [maxdate](#maxdate)
-* [numberformat](#numberformat)
-* [dateformat](#dateformat)
-* [regex](#regex)
-
-The environment wrappers are:
-
-* [delimitedvalues](#delimitedvalues)
-* [if](#if)
-
-### type
-
-Does the data conform to a specific field type?
-
-The defined DwCA specifications `type` provides a set of options to test the data type property of the field:
-
-* string
-* integer
-* float
-* number (integer or float)
-* boolean
-* url
-* json
-
-**Remark** datetime or date is not included as an available `type` specification, as date formats are provided as a separate rule for dates, embedded in the test [dateformat](#dateformat).
-
-```YAML
-# Expects: string
-# Records without data: are ignored
-# Records of wrong data type: is being tested
-
-type: integer
-type: float
-type: boolean
-type: json
-type: url
+sex:
+  allowed: [male, female]
 ```
 
-It is important to understand that any tool using the specification file should expects all incoming fields as string types initially (so no automatic coercing or interpretation of data types). When no `type` specification is applied, the value will be interpreted and tested as a string value. By incorporating a `type` specification, the validation tool will **first** interpret the value as the defined `type` to test it for (e.g. integer, float). When succeeded, the other tests will be applied on the interpreted value (integer, float).
+### A specification file
 
+Together, all these field/term-based specifications form a specification file (e.g. `my_specifications.yaml`), which can be used by a whip validator to test how well data meets certain specifications. In other words, you test if your data cracks under your whip, which can range from a feather :sweat_smile: to a chain whip :scream:.
+
+## Specification types
+
+### type (deprecated)
+
+Tests if a value is of a specific data type:
+
+```yaml
+myNumberField:
+  type: number          # Will accept 2 or 2.1 or "2", but not "Two"
+```
+
+The options for `type` are:
+
+```yaml
+myField:
+  type: string
+  type: integer
+  type: float
+  type: number           # An integer or a float
+  type: boolean
+  type: url
+  type: json
+
+# Obviously, you wouldn't add all these type specifications for a single field
+```
+
+Remarks:
+
+* A `date` or `datetime` option is not included. See [dateformat](#dateformat) instead.
+* See the examples below for how certain values are interpreted.
+
+Example | string | integer | float | number | boolean | url | json
+--- | --- | --- | --- | --- | --- | --- | --- 
+`Hello World!` | :heavy_check_mark: | :x: | :x: | :x: | :x: | :x: | :x:
+`1` | :heavy_check_mark: | :heavy_check_mark: | :x: | :heavy_check_mark: | :heavy_check_mark: | :x: | :x:
+`1.0` | :heavy_check_mark: | :x: | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | :x:
+`1.3` | :heavy_check_mark: | :x: | :heavy_check_mark: | :heavy_check_mark: | :x: | :x: | :x:
+`0` | :heavy_check_mark: | :heavy_check_mark: | :x: | :heavy_check_mark: | :heavy_check_mark: | :x: | :x:
+`True` | :heavy_check_mark: | :x: | :x: | :x: | :heavy_check_mark: | :x: | :x:
+`Yes` | :heavy_check_mark: | :x: | :x: | :x: | :x: | :x: | :x:
+`http://github.com/inbo/whip` | :heavy_check_mark: | :x: | :x: | :x: | :x: | :heavy_check_mark: | :x:
+`{"length": 2.0}` | :heavy_check_mark: | :x: | :x: | :x: | :x: | :x: | :heavy_check_mark:
+`Zero` | :heavy_check_mark: | :x: | :x: | :x: | :x: | :x: | :x:
+`Null` | :heavy_check_mark: | :x: | :x: | :x: | :x: | :x: | :x:
+`""` | :heavy_check_mark: | :x: | :x: | :x: | :x: | :x: | :x:
+empty value | :heavy_check_mark: | :x: | :x: | :x: | :x: | :x: | :x:
 
 ### minlength
 
@@ -257,6 +272,10 @@ Does the data match a specific regex expression?
 regex: # No example yet
 ```
 
+## Defining scope
+
+By default, whip specifications are field-based (i.e. the apply to the whole content of a single field) and independent from other fields. There are two methods to change that scope: `delimitedvalues` restricts the scope of specifications to individual delimited values within a field, while `if` makes specifications dependent on the value in another field.
+
 ### delimitedvalues
 
 Environment wrapper to work on delimited data within a field. Will alter the evaluation of all specifications to work with the delimited data instead of the whole string. Requires `delimiter`.
@@ -305,30 +324,5 @@ if:
       maxlength: 6
 ```
 
-## Remarks
 
-### Order
-Testing some of these specifications do rely on the presence or properties of other specifications, e.g. the interpretation of a `numberformat` is only possible if the appropriate type is present, as defined by a `type` specification. Instead of implicitly deriving this information (i.e. automatically testing for a number data type when  a `min`, `max` or `numberformat`), this should be explicitly defined by the user by adding a `type` specification. 
-
-The priority in the order of testing the different specifications, is as follows:
-
-**empty > type > other specifications**
-
-The `if` and `delimitedvalues` specifications are providing an environment fr which the specification need to be tested multiple times (taking into account this order for the individual tests):
-* `if: First, the testing of the condition (does the *if* condition apply?) and secondly - if true - , the evaluation of the conditional specification of the term itself
-* `delimitedvalues`: The defined specifications is evaluated for each of the individual terms as split by the delimiter, taking into account the order for each test individually.
-
-### min/max combination
-In order to keep the number of rules to a minimum,  it is decided to not have a separate test `equals`, as this can easily be achieved by combining a `min` and `max`  test:
-
-```
-equals: 10
-```
-is equal to this test description:
-```
-min: 10
-max: 10
-```
-
-The same is true for the specification  `length`, which is a combination of `minlength` and  `maxlength`.
 
