@@ -71,21 +71,26 @@ Tests if a value is the same as an allowed value or belongs to a list of allowed
 sex:
   allowed: male             # A single allowed value. Will accept "male", but 
                             # not "Male" (case-sensitive) or anything else.
-  
+
+sex:  
   allowed: "male"           # Same as above
+
+sex:
   allowed: [male]           # Same as above
 
+sex:
   allowed: [male, female]   # A list of allowed values: separate by commas and 
                             # wrap in square brackets. Will accept "male" or 
                             # "female".
 
+sex:
   allowed: [male, female, "male, female"] # Use quotes to escape commas and 
                             # whitespace. Will accept "male", "female" or 
                             # "male, female", but not "male,female" (no 
                             # whitespace) or "female, male".
 ```
 
-Note: To pass, a value needs to be literally the same (= same sequence of characters) as (one of) the allowed value(s). This means that `allowed` is sensitive to case and whitespace.
+Note: to pass, a value needs to be literally the same (= same sequence of characters) as (one of) the allowed value(s). This means that `allowed` is sensitive to case and whitespace.
 
 ### minlength
 
