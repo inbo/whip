@@ -113,17 +113,45 @@ license_plate:
 
 ### stringformat
 
+Tests if a value is valid json or a valid url:
+
+```yaml
+website:
+    stringformat: url       # Will accept "http://github.com/inbo/whip", 
+                            # including urls with http, querystrings and 
+                            # anchors, but not "github.com/inbo/whip"
+
+measurements:
+    stringformat: json      # Will accept {"length": 2.0} and 
+                            # {"length": 2.0, "length_unit": "cm"}, but not 
+                            # {'length': 2.0} or {length: 2.0} (use double 
+                            # quotes) or "length": 2.0 (use curly brackets).
+```
+
 ### regex
 
-Does the data match a specific regex expression?
+Tests if a value matches a regular expression (regex):
 
 ```YAML
-# Expects: regex expression
-# Records without data: are ignored!
-# Records of wrong data type: all considered strings
+observation_id
+    regex: 'INBO:VIS:\d+'   # Will accept "INBO:VIS:12" and "INBO:VIS:456", 
+                            # but not "INBO:VIS:" or "INBO:VIS:ABC"
 
-regex: # No example yet
+issue_url:
+    regex: 'https:\/\/github\.com\/inbo\/whip\/issues\/\d+' # Don't forget to 
+                            # escape (using "\") reserved characters like "." 
+                            # and "/". Will accept "https://github.com/inbo/
+                            # whip/issues/4"
+
+utm1km:
+    regex: '31U[D-G][S-T]\d\d\d\d' # Will accept UTM 1km codes for Flanders, 
+                            # e.g. 31UDS8748"
+
 ```
+
+Note: regular expressions allow to craft very specific specifications, but are often frustrately difficult to get right. Use a tool like https://regex101.com/ to verify that they will match/unmatch what you entend.
+
+Note: Always single quote the regex. Not quoting will fail expressions containing `[ ]`, as they are interpreted by YAML as a list. Double quoting can cause escaped characters to be escaped again.
 
 ### min
 
