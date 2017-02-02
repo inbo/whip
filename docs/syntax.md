@@ -1,6 +1,6 @@
 # Whip syntax
 
-This document specifies how to express data specifications in whip. How meta! :metal:
+This document specifies how to express data specifications in whip. How meta! 🤘
 
 * [General](#general)
     * [A single specification](#a-single-specification)
@@ -113,16 +113,16 @@ license_plate:
 
 ### stringformat
 
-Tests if a value is valid json or a valid url:
+Tests if a value conforms to a specific string format (`url` or `json`):
 
 ```yaml
 website:
-    stringformat: url       # Will accept "http://github.com/inbo/whip", 
+  stringformat: url         # Will accept "http://github.com/inbo/whip", 
                             # including urls with http, querystrings and 
                             # anchors, but not "github.com/inbo/whip"
 
 measurements:
-    stringformat: json      # Will accept {"length": 2.0} and 
+  stringformat: json        # Will accept {"length": 2.0} and 
                             # {"length": 2.0, "length_unit": "cm"}, but not 
                             # {'length': 2.0} or {length: 2.0} (use double 
                             # quotes) or "length": 2.0 (use curly brackets).
@@ -132,77 +132,71 @@ measurements:
 
 Tests if a value matches a regular expression (regex):
 
-```YAML
+```yaml
 observation_id
-    regex: 'INBO:VIS:\d+'   # Will accept "INBO:VIS:12" and "INBO:VIS:456", 
+  regex: 'INBO:VIS:\d+'     # Will accept "INBO:VIS:12" and "INBO:VIS:456", 
                             # but not "INBO:VIS:" or "INBO:VIS:ABC"
 
 issue_url:
-    regex: 'https:\/\/github\.com\/inbo\/whip\/issues\/\d+' # Don't forget to 
+  regex: 'https:\/\/github\.com\/inbo\/whip\/issues\/\d+' # Don't forget to 
                             # escape (using "\") reserved characters like "." 
                             # and "/". Will accept "https://github.com/inbo/
                             # whip/issues/4"
 
 utm1km:
-    regex: '31U[D-G][S-T]\d\d\d\d' # Will accept UTM 1km codes for Flanders, 
-                            # e.g. 31UDS8748"
-
+  regex: '31U[D-G][S-T]\d\d\d\d' # Will accept UTM 1km codes for Flanders, 
+                            # e.g. "31UDS8748"
 ```
 
-Note: regular expressions allow to craft very specific specifications, but are often frustrately difficult to get right. Use a tool like https://regex101.com/ to verify that they will match/unmatch what you entend.
+Note: regular expressions allow to craft very specific specifications, but are often frustrately difficult to get right. Use a tool like https://regex101.com to verify that they will match/unmatch what you entend.
 
 Note: Always single quote the regex. Not quoting will fail expressions containing `[ ]`, as they are interpreted by YAML as a list. Double quoting can cause escaped characters to be escaped again.
 
 ### min
 
-Minimum value allowed for integer/float and number formats. Whereas this works for different numeric types, evaluation is done on a float representation.
+Tests if a numeric value is equal or higher than a minimum value:
 
-```YAML
-# Expects: int/float; values will be compared as floats
-# Records without data: are ignored
-# Records of wrong data type: ignore (data types are tested separately with `type`)
+```yaml
+age:
+  min: 9                    # Will accept "9", "9.0", "9.1", "10", but not 
+                            # "8.99999" or "-9".
 
-min: 0.5     # float
-min: 20     # integer
+age:
+  min: 9.0                  # Same as above
 ```
-
-**Remark**
-
-It is important to combine the test with an appropriate data type validation to enable the test when using numeric values
-
-The usage is of particular interest if values should be accepted, but the decimal precision is not important. For example: 0.75 will also accept 0.750 and 200 also 200.0. When the value need to be exactly the same, the usage of `allowed` (works on strings) is advisable (see next).
 
 ### max
 
-Maximum value allowed for integer/float and number formats. Whereas this works for different numeric types, evaluation is done on a float representation.
+Tests if a numeric value is equal or lower than a maximum value:
 
-```YAML
-# Expects: int/float; values will be compared as floats
-# Records without data: are ignored
-# Records of wrong data type: ignore (data types are tested separately with `type`)
+```yaml
+age:
+  max: 99                   # Will accept "99", "99.0", "89.9", "88", "-99", 
+                            # but not "99.1".
 
-max: 0.75     # float
-max: 200     # integer
+age:
+  max: 99.0                 # Same as above
 ```
-
-**Remark**
-
-It is important to combine the test with an appropriate data type validation to enable the test when using numeric values
-
-The usage is of particular interest if values should be accepted, but the decimal precision is not important. For example: 0.75 will also accept 0.750 and 200 also 200.0. When the value need to be exactly the same, the usage of `allowed` (works on strings) is advisable (see next).
 
 ### numberformat
 
-Does the float number conform to a specific precision format?
+Tests if a value conforms to a specific number format:
 
-```YAML
-# Expects: string and need to be combined with `type` : float validator
-# Records without data: are ignored
-# Records of wrong data type: fail test
+```yaml
+length:
+  numberformat: '.3'        # Will accept numbers with 3 digits to the right 
+                            # of the decimal point, such as ".123", "1.123" 
+                            # and "12.123", but not "1.12" or "1.1234".
 
-numberformat: '.5' # 5 decimals, left side of the decimal not specified, e.g. 1.12345 or 12.12345
-numberformat: '3.5' # 3 digits at the left side of the decimal and 5 decimal digits, e.g. 123.12345
-numberformat: '4.' # 4 digits at the left side, right side not specified, e.g. 1234., 1234.12 or also the integer 1234
+length:
+  numberformat: '2.'        # Will accept numbers with 2 digits to the left 
+                            # of the decimal point, such as "12", "12." and 
+                            # "12.1", but not "123".
+
+length:
+  numberformat: '2.3'       # Will accept numbers with 2 digits to the left 
+                            # and 3 digits to the right of the decimal point, 
+                            # such as "12.123".
 ```
 
 ### mindate
