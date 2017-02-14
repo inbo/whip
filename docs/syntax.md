@@ -75,6 +75,9 @@ sex:
 sex:  
   allowed: "male"           # Same as above
 
+sex:  
+  allowed: 'male'           # Same as above
+
 sex:
   allowed: [male]           # Same as above
 
@@ -84,7 +87,7 @@ sex:
                             # "female".
 
 sex:
-  allowed: [male, female, "male, female"] # Use quotes to escape commas and 
+  allowed: [male, female, 'male, female'] # Use quotes to escape commas and 
                             # whitespace. Will accept "male", "female" or 
                             # "male, female", but not "male,female" (no 
                             # whitespace) or "female, male".
@@ -150,7 +153,7 @@ utm1km:
 
 Note: regular expressions allow to craft very specific specifications, but are often frustrately difficult to get right. Use a tool like https://regex101.com to verify that they will match/unmatch what you entend.
 
-Note: Always single quote the regex. Not quoting will fail expressions containing `[ ]`, as they are interpreted by YAML as a list. Double quoting can cause escaped characters to be escaped again.
+Note: Always wrap the regex in single quotes. Not quoting will fail expressions containing `[ ]`, as they are interpreted by YAML as a list. Double quoting can cause escaped characters to be escaped again.
 
 ### min
 
@@ -180,7 +183,7 @@ age:
 
 ### numberformat
 
-Tests if a value conforms to a specific number format:
+Tests if a numeric value conforms to a specific number format:
 
 ```yaml
 length:
@@ -202,7 +205,7 @@ length:
 
 ### mindate
 
-Tests if a date is equal to or later than a minimum date:
+Tests if a date value is equal to or later than a minimum date:
 
 ```yaml
 date:
@@ -212,7 +215,7 @@ date:
 
 ### maxdate
 
-Tests if a date is equal to or earlier than a maximum date:
+Tests if a date value is equal to or earlier than a maximum date:
 
 ```yaml
 date:
@@ -222,23 +225,44 @@ date:
 
 ### dateformat
 
-Does the data conform to a specific date format? Possibilities provided at
-http://strftime.org/
+Tests if a date value conforms to a specific date format. Syntax follows [strftime](http://strftime.org/):
 
-```YAML
-dateformat:['%Y-%m-%d', '%Y-%m', '%Y'] # Will match specific date formats
-dateformat:['%Y-%m-%d/%Y-%m-%d'] # Will match a date range
+```yaml
+date:
+  dateformat: '%Y-%m-%d'    # Will accept "2016-12-07", but not "2016/12/07", 
+                            # "07-12-2016", "2016-12", or "2016-12-32" 
+                            # (invalid date).
+
+date:
+  dateformat: ['%Y-%m-%d', '%Y-%m', '%Y'] # Will accept valid ISO8601 dates 
+                            # "2016-12-07", "2016-12", and "2016".
+
+date:
+  dateformat: ['%Y-%m-%d/%Y-%m-%d'] # Will accept valid day-precise ISO8601 
+                            # date ranges, such as "2016-01-01/2017-02-13"
 ```
+
+Note: Always wrap dateformat in single quotes. 
 
 ### empty
 
-Empty values are default not accepted. If empty values are allowed for a particular field, `empty` can be put to `True`. Hence, this is a shortcut to `allowed: ['']`.
+Allows a value to be empty, which by default is not accepted:
 
-```YAML
-# Expects: boolean
-# Records of wrong data type: only considered strings (default in Dwc)
+```yaml
+sex:
+  allowed: [male, female]   # Default situation: will accept "male" and 
+                            # "female", but not empty values.
 
-empty: True
+sex:
+  empty: True               # Allows empty values for this field.
+  allowed: [male, female]   # Will accept "male", "female" and empty values.
+
+sex:
+  allowed: [male, female]   # Same as above
+  empty: True
+
+sex:
+  allowed: [male, female, ''] # Same as above
 ```
 
 ## Defining scope
