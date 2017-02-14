@@ -246,12 +246,12 @@ Note: Always wrap dateformat in single quotes.
 
 ### empty
 
-Allows a value to be empty, which by default is not accepted:
+Allows a value to be empty, which is not accepted by default:
 
 ```yaml
 sex:
-  allowed: [male, female]   # Default situation: will accept "male" and 
-                            # "female", but not empty values.
+  allowed: [male, female]   # Default: will accept "male" and "female", 
+                            # but not empty values.
 
 sex:
   empty: True               # Allows empty values for this field.
