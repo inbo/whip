@@ -154,7 +154,7 @@ Note: Always single quote the regex. Not quoting will fail expressions containin
 
 ### min
 
-Tests if a numeric value is equal or higher than a minimum value:
+Tests if a numeric value is equal to or higher than a minimum value:
 
 ```yaml
 age:
@@ -167,7 +167,7 @@ age:
 
 ### max
 
-Tests if a numeric value is equal or lower than a maximum value:
+Tests if a numeric value is equal to or lower than a maximum value:
 
 ```yaml
 age:
@@ -202,28 +202,22 @@ length:
 
 ### mindate
 
-Does the date/datetime object happens before a given date?
+Tests if a date is equal to or later than a minimum date:
 
-```YAML
-# Expects: date string
-# Records without data: are ignored
-# Records of wrong data type: fail test
-
-mindate: 1830-01-01  # After 1 Jan 1830
-mindate: 2014-10-20 # After 20 October 2014
+```yaml
+date:
+  mindate: 1985-11-29       # Will accept "1985-11-29" and "2012-09-12", but 
+                            # not "1942-11-26".
 ```
 
 ### maxdate
 
-Does the date/datetime objects happens after a given date?
+Tests if a date is equal to or earlier than a maximum date:
 
-```YAML
-# Expects: date string
-# Records without data: are ignored
-# Records of wrong data type: fail test
-
-maxdate: 1830-01-01  # After 1 Jan 1830
-maxdate: 2014-10-20 # After 20 October 2014
+```yaml
+date:
+  maxdate: 2012-09-12       # Will accept "2012-09-12" and "1985-11-29", 
+                            # but not "2016-12-07".
 ```
 
 ### dateformat
