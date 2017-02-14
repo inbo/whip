@@ -257,13 +257,10 @@ Allows empty values:
 sex:
   allowed: [male, female]   # Will accept "male" and "female", but not empty 
                             # values.
-  maxlength: 6              # Will accept values with 6 characters or less, 
-                            # but not empty values.
 
 sex:
   allowed: [male, female]
-  maxlenght: 6
-  empty: False              # Same as above
+  empty: False              # Same as above, implied by default.
 
 # With empty: True
 sex:
@@ -271,19 +268,41 @@ sex:
                             # this field.
   allowed: [male, female]   # Will now accept "male", "female", and empty 
                             # values.
-  maxlength: 6              # Will now accept values with 6 characters or less,
-                            # and empty values.
 
 sex:
   allowed: [male, female]
-  maxlength: 6
   empty: True               # Same as above, order does not matter.
-
-sex:
-  allowed: [male, female, ''] # Same as above, but not recommended, since this 
-                            # method only works for allowed specifications.
 ```
 
+Note: Whip specificiations never accept empty values, except when `empty: True`is added as a specification. That means that the following specifications **will not accept empty values**, even though you might intuitively think so:
+
+```yaml
+field:
+  maxlength: 2
+
+field:
+  maxlength: 0              
+
+field:
+  minlength: 0
+
+field:
+  allowed: ''
+
+field:
+  allowed: [male, female, '']
+
+field:
+  regex: '^\s*$'
+```
+
+Note: to **only accept empty values** (and nothing else), use:
+
+```yaml
+required_to_be_empty:
+  empty: True
+  allowed: ''
+```
 
 ### delimitedvalues
 
