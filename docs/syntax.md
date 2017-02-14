@@ -18,8 +18,8 @@ This document specifies how to express data specifications in whip. How meta! ðŸ
     * [mindate](#mindate)
     * [maxdate](#maxdate)
     * [dateformat](#dateformat)
+* [Changing scope](#changing-scope)
     * [empty](#empty)
-* [Defining scope](#defining-scope)
     * [delimitedvalues](#delimitedvalues)
     * [if](#if)
 
@@ -244,30 +244,46 @@ date:
 
 Note: Always wrap dateformat in single quotes. 
 
+## Changing scope
+
+By default, whip specifications do not accept empty values, are field-based (i.e. they apply to the whole content of a single field) and are independent from other fields. There are three methods to change that scope: `empty` allows empty values for all specifications of a field, `delimitedvalues` restricts the scope of specifications to individual delimited values within a field, and `if` makes specifications dependent on the value of another field.
+
 ### empty
 
-Allows a value to be empty, which is not accepted by default:
+Allows empty values:
 
 ```yaml
+# Default
 sex:
-  allowed: [male, female]   # Default: will accept "male" and "female", 
+  allowed: [male, female]   # Will accept "male" and "female", but not empty 
+                            # values.
+  maxlength: 6              # Will accept values with 6 characters or less, 
                             # but not empty values.
 
 sex:
-  empty: True               # Allows empty values for this field.
-  allowed: [male, female]   # Will accept "male", "female" and empty values.
+  allowed: [male, female]
+  maxlenght: 6
+  empty: False              # Same as above
+
+# With empty: True
+sex:
+  empty: True               # Allows empty values for all specifications of 
+                            # this field.
+  allowed: [male, female]   # Will now accept "male", "female", and empty 
+                            # values.
+  maxlength: 6              # Will now accept values with 6 characters or less,
+                            # and empty values.
 
 sex:
-  allowed: [male, female]   # Same as above
-  empty: True
+  allowed: [male, female]
+  maxlength: 6
+  empty: True               # Same as above, order does not matter.
 
 sex:
-  allowed: [male, female, ''] # Same as above
+  allowed: [male, female, ''] # Same as above, but not recommended, since this 
+                            # method only works for allowed specifications.
 ```
 
-## Defining scope
-
-By default, whip specifications are field-based (i.e. the apply to the whole content of a single field) and independent from other fields. There are two methods to change that scope: `delimitedvalues` restricts the scope of specifications to individual delimited values within a field, while `if` makes specifications dependent on the value in another field.
 
 ### delimitedvalues
 
