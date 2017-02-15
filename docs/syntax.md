@@ -246,11 +246,11 @@ Note: Always wrap dateformat in single quotes.
 
 ## Changing scope
 
-By default, whip specifications do not accept empty values, are field-based (i.e. they apply to the whole content of a single field) and are independent from other fields. There are three methods to change that scope: `empty` allows empty values for all specifications of a field, `delimitedvalues` restricts the scope of specifications to individual delimited values within a field, and `if` makes specifications dependent on the value of another field.
+By default, whip specifications reject empty values, apply to the whole content of a single field, and are independent from other fields. There are three methods to change that scope: `empty` allows empty values to pass specifications, `delimitedvalues` restricts the scope of specifications to individual delimited values within a field, and `if` makes specifications dependent on the value of another field.
 
 ### empty
 
-Allows empty values:
+Allows empty values for all specifications of a field:
 
 ```yaml
 # Default
@@ -274,34 +274,35 @@ sex:
   empty: True               # Same as above, order does not matter.
 ```
 
-Note: Whip specificiations never accept empty values, except when `empty: True`is added as a specification. That means that the following specifications **will not accept empty values**, even though you might intuitively think so:
+Note: Whip specifications will only accept empty values when `empty: True` is **explicitly** added as a specification. That means that the following specifications **will not accept empty values**, even though you might intuitively think so:
 
 ```yaml
 field:
-  maxlength: 2
+  maxlength: 2              # Will not accept empty values.
 
 field:
-  maxlength: 0              
+  maxlength: 0              # Will not accept anything.
 
 field:
-  minlength: 0
+  minlength: 0              # Will not accept empty values.
 
 field:
-  allowed: ''
+  allowed: ''               # Will not accept empty values.
 
 field:
-  allowed: [male, female, '']
+  allowed: [male, female, ''] # Will not accept empty values.
 
 field:
-  regex: '^\s*$'
+  regex: '^\s*$'            # Regex to match an empty string, will not accept 
+                            # empty values.
 ```
 
 Note: to **only accept empty values** (and nothing else), use:
 
 ```yaml
 required_to_be_empty:
-  empty: True
   allowed: ''
+  empty: True
 ```
 
 ### delimitedvalues
