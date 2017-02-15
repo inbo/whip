@@ -88,12 +88,12 @@ sex:
 
 sex:
   allowed: [male, female, 'male, female'] # Use quotes to escape commas and 
-                            # whitespace. Will accept "male", "female" or 
+                            # white space. Will accept "male", "female" or 
                             # "male, female", but not "male,female" (no 
-                            # whitespace) or "female, male".
+                            # white space) or "female, male".
 ```
 
-Note: to pass, a value needs to be literally the same (= same sequence of characters) as (one of) the allowed value(s). This means that `allowed` is sensitive to case and whitespace.
+Note: to pass, a value needs to be literally the same (= same sequence of characters) as (one of) the allowed value(s). This means that `allowed` is sensitive to case and white space.
 
 ### minlength
 
@@ -151,9 +151,9 @@ utm1km:
                             # e.g. "31UDS8748"
 ```
 
-Note: regular expressions allow to craft very specific specifications, but are often frustrately difficult to get right. Use a tool like https://regex101.com to verify that they will match/unmatch what you entend.
+Note: regular expressions allow to craft very specific specifications, but are often frustratingly difficult to get right. Use a tool like https://regex101.com to verify that they will match/unmatch what you intend.
 
-Note: Always wrap the regex in single quotes. Not quoting will fail expressions containing `[ ]`, as they are interpreted by YAML as a list. Double quoting can cause escaped characters to be escaped again.
+Note: Always wrap the regex specification in single quotes. Not quoting will fail expressions containing `[ ]`, as they are interpreted by YAML as a list. Double quoting can cause escaped characters to be escaped again.
 
 ### min
 
@@ -242,7 +242,7 @@ date:
                             # date ranges, such as "2016-01-01/2017-02-13"
 ```
 
-Note: Always wrap dateformat in single quotes. 
+Note: Always wrap the dateformat specification in single quotes. 
 
 ## Changing scope
 
