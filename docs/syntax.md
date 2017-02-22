@@ -136,7 +136,7 @@ measurements:
 Tests if a value matches a regular expression (regex):
 
 ```yaml
-observation_id
+observation_id:
   regex: 'INBO:VIS:\d+'     # Will accept "INBO:VIS:12" and "INBO:VIS:456", 
                             # but not "INBO:VIS:" or "INBO:VIS:ABC"
 
