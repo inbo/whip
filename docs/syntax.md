@@ -341,29 +341,63 @@ list_of_names:
                             # by default.
 ```
 
-Environment wrapper to define condition specifications, i.e. specifications of a term are  based on the specifications of another term. All conditional tests on the other term must succeed (i.e. they are combined with `AND`) before the specifications are evaluated.
+### if
 
-```YAML
-if:
-    basisOfRecord:
-        allowed: [HumanObservation]
-    allowed: [Event]
-    empty: False
+Makes specifications conditional to another field of the same record (i.e. the same row in tabular format) successfully passing specifications:
+
+​```yaml
+lifestage:
+  if:
+    - sex:
+        allowed: [male, female] # If sex is "male" or "female"...
+      allowed: adult        # ... then lifestage needs to be "adult".
+    - sex:
+        allowed: ''         # If sex is empty (and nothing else)...
+        empty: True
+      allowed: ''           # ... then lifestage needs to be empty.
+      empty: True
 ```
 
-To combine multiple if-statements, these need to be grouped as follows:
+Note: Always use the correct indentation and `-` notation to define conditional groups:
 
-```YAML
-if:
-    - age:
-          min: 20
-          type: integer
-      allowed: [adult]
-    - age:
-          min: 20
-          type: integer
-      maxlength: 6
+​```yaml
+field_1:
+  if:
+    - field_2:              # Conditional group A
+        spec_for_field_2: value
+        spec_for_field_2: value
+      conditional_spec_for_field_1: value
+      conditional_spec_for_field_1: value
+
+    - field_2:              # Conditional group B
+        spec_for_field_2: value
+      conditional_spec_for_field_1: value
+      conditional_spec_for_field_1: value
 ```
 
+Note: conditional groups are independent from each other. This means that certain values can pass one conditional group, but fail another. In the example below a record with `sex = male` and `lifestage = adult` will pass the first conditional group, but fail the second. Avoid using very broad conditions:
 
+```yaml
+lifestage:
+  if:
+    - sex:
+        allowed: [male, female] # If sex is "male" or "female"...
+      allowed: adult        # ... then lifestage needs to be "adult".
+    - sex:
+        empty: False        # If sex is any non-empty value, including "male" 
+                            # or "female"...
+      allowed: unknown      # ... then lifestage needs to be "unknown".
+```
 
+Note: the other field needs to successfully pass all its specifications (i.e. they are combined with the `AND` operator) before the conditional specifications are tested:
+
+```yaml
+province:
+  if:
+    - postalcode:
+        type: integer       # province needs to be an integer
+        min: 8000           # AND province needs to be larger or equal to 8000
+        max: 8999           # AND province needs to be smaller or equal to 8999
+      allowed: 'West Flanders' # Only then it is tested if province is 
+                            # "West Flanders".
+```
