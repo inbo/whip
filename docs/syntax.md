@@ -250,7 +250,7 @@ By default, whip specifications reject empty values, apply to the whole content 
 
 ### empty
 
-Allows empty values for all specifications of a field:
+Makes specifications accept empty values:
 
 ```yaml
 # Default
@@ -264,8 +264,8 @@ sex:
 
 # With empty: True
 sex:
-  empty: True               # Allows empty values for all specifications of 
-                            # this field.
+  empty: True               # Makes all specifications of this field to accept 
+                            # empty values.
   allowed: [male, female]   # Will now accept "male", "female", and empty 
                             # values.
 
@@ -297,7 +297,7 @@ field:
                             # empty values.
 ```
 
-Note: to **only accept empty values** (and nothing else), use:
+Note: to *only accept empty values* (and nothing else), use:
 
 ```yaml
 required_to_be_empty:
@@ -307,7 +307,7 @@ required_to_be_empty:
 
 ### delimitedvalues
 
-Restricts the scope of specifications to individual delimited values within a field. Requires `delimiter`:
+Makes specifications apply to delimited values within a field, rather than the whole field. Requires `delimiter`:
 
 ```yaml
 sex:
@@ -316,11 +316,14 @@ sex:
                             # of a field. All specifications within the 
                             # "delimitedvalues" group apply to values 
                             # delimited with this delimiter.
+    
     allowed: [male, female] # Will accept "male" or "female".
-                            # Valid values for the whole field are thus: 
+                            # Valid values for the whole field thus are: 
                             # "male", "female", "male | female", and 
-                            # "female | male", but not "male, female", 
-                            # "male|female", or "male|".
+                            # "female | male", but not "male, female" (wrong 
+                            # delimiter), "male|female" (missing spaces), or 
+                            # "male | " (empty second value).
+  
   empty: True               # It is still possible to set specifications for 
                             # the whole field. Here it is specified that the 
                             # whole field can be empty (but delimited values 
