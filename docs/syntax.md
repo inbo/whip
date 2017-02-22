@@ -343,9 +343,9 @@ list_of_names:
 
 ### if
 
-Makes specifications conditional to another field of the same record (i.e. the same row in tabular format) successfully passing specifications:
+Makes specifications conditional. This means that they are only verified if another field of the same record (i.e. the same row in tabular format) successfully passes certain specifications:
 
-​```yaml
+```yaml
 lifestage:
   if:
     - sex:
@@ -358,24 +358,24 @@ lifestage:
       empty: True
 ```
 
-Note: Always use the correct indentation and `-` notation to define conditional groups:
+Note: Always use the correct indentation and `-` to define a new condition:
 
-​```yaml
+```yaml
 field_1:
   if:
-    - field_2:              # Conditional group A
+    - field_2:              # Condition A
         spec_for_field_2: value
         spec_for_field_2: value
       conditional_spec_for_field_1: value
       conditional_spec_for_field_1: value
 
-    - field_2:              # Conditional group B
+    - field_2:              # Condition B
         spec_for_field_2: value
       conditional_spec_for_field_1: value
       conditional_spec_for_field_1: value
 ```
 
-Note: conditional groups are independent from each other. This means that certain values can pass one conditional group, but fail another. In the example below a record with `sex = male` and `lifestage = adult` will pass the first conditional group, but fail the second. Avoid using very broad conditions:
+Note: conditions are independent from each other. This means that certain records can pass one condition, but fail another. In the example below a record with `sex = male` and `lifestage = adult` will pass the first condition, but fail the second. Avoid using very broad conditions:
 
 ```yaml
 lifestage:
@@ -384,12 +384,12 @@ lifestage:
         allowed: [male, female] # If sex is "male" or "female"...
       allowed: adult        # ... then lifestage needs to be "adult".
     - sex:
-        empty: False        # If sex is any non-empty value, including "male" 
-                            # or "female"...
+        empty: False        # If sex is any non-empty value, which includes 
+                            # "male" or "female"...
       allowed: unknown      # ... then lifestage needs to be "unknown".
 ```
 
-Note: the other field needs to successfully pass all its specifications (i.e. they are combined with the `AND` operator) before the conditional specifications are tested:
+Note: the value of a field on which a condition is based needs to successfully pass all specifications (i.e. they are combined with the `AND` operator) before the conditional specifications are tested:
 
 ```yaml
 province:
