@@ -14,6 +14,7 @@ my_date_field:
 ## Documentation
 
 * [Syntax](docs/syntax.md)
+* [Implementation guidelines](docs/implementation_guidelines.md)
 
 ## Contributors
 
