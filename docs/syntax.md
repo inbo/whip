@@ -330,7 +330,16 @@ sex:
                             # cannot).
 ```
 
-### if
+Note: to specify that a field cannot contain empty delimited values (but without defining other specifications for those values), use:
+
+```yaml
+list_of_names:
+  empty: true               # The whole field can be empty...
+  delimitedvalues:
+    delimiter: ' | '        # .. but using this delimiter, delimited values 
+                            # cannot be empty, since "empty: True" is implied 
+                            # by default.
+```
 
 Environment wrapper to define condition specifications, i.e. specifications of a term are  based on the specifications of another term. All conditional tests on the other term must succeed (i.e. they are combined with `AND`) before the specifications are evaluated.
 
