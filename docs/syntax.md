@@ -307,24 +307,24 @@ required_to_be_empty:
 
 ### delimitedvalues
 
-Environment wrapper to work on delimited data within a field. Will alter the evaluation of all specifications to work with the delimited data instead of the whole string. Requires `delimiter`.
+Restricts the scope of specifications to individual delimited values within a field. Requires `delimiter`:
 
-```YAML
-delimitedvalues:
-  delimiter: " | "  # Will use this delimiter for separating values.
-                    # Depending on how well data is delimited, the
-                    # following tests will fail or succeed
-  required: true   # No empty delimited values
-  type: url
-  allowed: [male, female] # Delimited values equal male or female
-  minlength: 8
-  maxlength: 8
-  min: 1
-  max: 1
-  numberformat: .3f
-  regex: ...
-  listvalues: true  # List unique delimited values across all records - TODO
-  dateformat: ...   # Use datevalues subfunction
+```yaml
+sex:
+  delimitedvalues:
+    delimiter: ' | '        # Required. Will use this to separate content 
+                            # of a field. All specifications within the 
+                            # "delimitedvalues" group apply to values 
+                            # delimited with this delimiter.
+    allowed: [male, female] # Will accept "male" or "female".
+                            # Valid values for the whole field are thus: 
+                            # "male", "female", "male | female", and 
+                            # "female | male", but not "male, female", 
+                            # "male|female", or "male|".
+  empty: True               # It is still possible to set specifications for 
+                            # the whole field. Here it is specified that the 
+                            # whole field can be empty (but delimited values 
+                            # cannot).
 ```
 
 ### if
