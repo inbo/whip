@@ -21,6 +21,7 @@ my_date_field:
 * [Stijn Van Hoey](https://github.com/stijnvanhoey)
 * [Christian Gendreau](https://github.com/cgendreau)
 * [Dimitri Brosens](https://github.com/DimEvil)
+* [John Wieczorek](https://github.com/tucotuco)
 
 ## License
 
