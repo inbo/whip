@@ -188,22 +188,23 @@ Tests if a numeric value conforms to a specific number format:
 ```yaml
 length:
   numberformat: '.3'        # Will accept numbers with 3 digits to the right 
-                            # of the decimal point, such as ".123", "1.123" 
-                            # and "12.123", but not "1.12", "1.1234" or 
-                            # "a.abc".
+                            # of the decimal point, such as ".123", "1.123", 
+                            # "1.123"and "12.123", but not "1.12", "1.1234"  
+                            # or "a.abc".
 
 length:
   numberformat: '2.'        # Will accept numbers with 2 digits to the left 
-                            # of the decimal point, such as "12", "12." and 
-                            # "12.1", but not "123".
+                            # of the decimal point, such as "12", "12.", 
+                            # "-12." and  "12.1", but not "123".
 
 length:
   numberformat: '2.3'       # Will accept numbers with 2 digits to the left 
                             # and 3 digits to the right of the decimal point, 
-                            # such as "12.123".
+                            # such as "12.123", "-12.123".
 ```
 
-Note: Always wrap the numberformat specification in single quotes.
+Note: Always wrap the numberformat specification in single quotes. The negative 
+is ignored, only digits are taken into account
 
 ### mindate
 
