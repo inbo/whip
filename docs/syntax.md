@@ -201,6 +201,12 @@ length:
   numberformat: '2.3'       # Will accept numbers with 2 digits to the left 
                             # and 3 digits to the right of the decimal point, 
                             # such as "12.123".
+length:
+  numberformat: '.'       # Will accept any float value
+
+length:
+  numberformat: 'x'       # Will accept any integer value, but no floats
+
 ```
 
 Note: Always wrap the numberformat specification in single quotes.
