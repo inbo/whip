@@ -155,6 +155,8 @@ Note: regular expressions allow to craft very specific specifications, but are o
 
 Note: Always wrap the regex specification in single quotes. Not quoting will fail expressions containing `[ ]`, as they are interpreted by YAML as a list. Double quoting can cause escaped characters to be escaped again.
 
+Note: The regex always expects to have a full match of the value.
+
 ### min
 
 Tests if a numeric value is equal to or higher than a minimum value:
