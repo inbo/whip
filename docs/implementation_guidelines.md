@@ -84,11 +84,11 @@ Hence, development of tools based on these specifications can be split into two 
 ## Remarks
 
 ### Order
-Testing some of these specifications do rely on the presence or properties of other specifications.  
+Testing some of these specifications do rely on the presence or properties of other specifications. This mainly involves the usage of the `empty: True` validation test, as this ccompares to the other tests as an `or`: either the value is `empty` OR it is not empty and all other tests need to be checked. 
 
-The priority in the order of testing the different specifications, is as follows:
+In other words, the priority in the order of testing the different specifications, is as follows:
 
-**empty > other specifications**
+**empty > other specifications** where other tests are aborted when the value is empty.
 
 The `if` and `delimitedvalues` specifications are providing an environment for which the specification need to be tested multiple times (taking into account this order for the individual tests):
 * `if: First, the testing of the condition (does the *if* condition apply?) and secondly - if true - , the evaluation of the conditional specification of the term itself
