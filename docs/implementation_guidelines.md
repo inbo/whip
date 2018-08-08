@@ -37,7 +37,7 @@ The resulting object will be processed by a report creator, which provides an ov
 
 ## Coercing
 
-It is important to understand that any tool using the specification file should expects all incoming fields as string types initially (so no automatic coercing or interpretation of data types). When no `type` specification is applied, the value will be interpreted and tested as a string value. By incorporating a `type` specification, the validation tool will **first** interpret the value as the defined `type` to test it for (e.g. integer, float). When succeeded, the other tests will be applied on the interpreted value (integer, float).
+It is important to understand that any tool using the specification file should expects all incoming fields as string types initially (so no automatic coercing or interpretation of data types). All implemented validation tests should be implemented based on a string as input. Hence, the `min` and `max` test will coerce the value to a `float` to make the numeric comparison. 
 
 ## Validation and reporting
 
@@ -84,13 +84,13 @@ Hence, development of tools based on these specifications can be split into two 
 ## Remarks
 
 ### Order
-Testing some of these specifications do rely on the presence or properties of other specifications, e.g. the interpretation of a `numberformat` is only possible if the appropriate type is present, as defined by a `type` specification. Instead of implicitly deriving this information (i.e. automatically testing for a number data type when  a `min`, `max` or `numberformat`), this should be explicitly defined by the user by adding a `type` specification. 
+Testing some of these specifications do rely on the presence or properties of other specifications.  
 
 The priority in the order of testing the different specifications, is as follows:
 
-**empty > type > other specifications**
+**empty > other specifications**
 
-The `if` and `delimitedvalues` specifications are providing an environment fr which the specification need to be tested multiple times (taking into account this order for the individual tests):
+The `if` and `delimitedvalues` specifications are providing an environment for which the specification need to be tested multiple times (taking into account this order for the individual tests):
 * `if: First, the testing of the condition (does the *if* condition apply?) and secondly - if true - , the evaluation of the conditional specification of the term itself
 * `delimitedvalues`: The defined specifications is evaluated for each of the individual terms as split by the delimiter, taking into account the order for each test individually.
 
