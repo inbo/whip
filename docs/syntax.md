@@ -189,7 +189,7 @@ Tests if a numeric value conforms to a specific number format:
 length:
   numberformat: '.3'        # Will accept numbers with 3 digits to the right 
                             # of the decimal point, such as ".123", "1.123", 
-                            # "1.123"and "12.123", but not "1.12", "1.1234"  
+                            # "-1.123"and "12.123", but not "1.12", "1.1234"  
                             # or "a.abc".
 
 length:
