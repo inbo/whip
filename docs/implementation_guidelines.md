@@ -95,7 +95,8 @@ The `if` and `delimitedvalues` specifications are providing an environment for w
 * `delimitedvalues`: The defined specifications is evaluated for each of the individual terms as split by the delimiter, taking into account the order for each test individually.
 
 In order to tackle the combination of `empty` and `if` statements, the implementation need to take into account the following:
-* a general `empty: True` defines: *values of this field are allowed to be empty* for which the scope can be decreased to *some values of this field - considering the given conditions - are allowed to be empty*. In practice, this means that `empty: True` inside an `if` condition is only possible when a general `empt: True` is present as well. Hence, the following should give a `SchemaError`:
+* When not specified, each field gets an `empty: False` assigned. 
+* A general `empty: True` defines: *values of this field are allowed to be empty* for which the scope can be decreased to *some values of this field - considering the given conditions - are allowed to be empty*. In practice, this means that `empty: True` inside an `if` condition is only possible when a general `empt: True` is present as well. Hence, the following should give a `SchemaError`:
 
 ```
 sex:
@@ -108,7 +109,20 @@ lifestage:
         empty: True
 ```
 
-Whereas this schema is correct:
+as, since the `empty: False` statement is added *in the background* to the `lifestage` field. The specification becomes:
+
+```
+sex:
+    empty: True
+lifestage:
+    empty: False
+    if:
+        sex:
+            allowed: [male]
+        allowed: [adult]
+        empty: True
+```
+and empty values are no longer accepted (so, when an empty value occurs, all other tests are skipped). The following schema addresses this by adding the `empty: True` to the `lifestage` field:
 
 ```
 sex:
@@ -121,6 +135,8 @@ lifestage:
         allowed: [adult]
         empty: True
 ```
+
+It is adviced to control the incoming whip specification schema for this situation and provide a useful `SchemaError` when `empty: True` is missing in this specific situation. The alternative - adding the required `empty: True` automatically is not advised, to have the specifications more explcit.
 
 ### min/max combination
 In order to keep the number of rules to a minimum,  it is decided to not have a separate test `equals`, as this can easily be achieved by combining a `min` and `max`  test:
