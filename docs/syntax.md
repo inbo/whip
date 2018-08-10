@@ -413,3 +413,30 @@ province:
       allowed: 'West Flanders' # Only then it is tested if province is 
                             # "West Flanders".
 ```
+
+Note: The usage of an `if` valdiation will overrule a general `empty: True` statement for that specific field. For example, according to the following whip specification, the field `lifestage` can not be empty when the field `sex` is equal to `male`:
+
+```yaml
+sex:
+   empty: True
+lifestage:
+   empty: True
+   if:
+       sex:
+           allowed: [male]
+       allowed: [adult]
+```
+
+For all other values (not affected by the condition of the `sex` field), the value can be empty. In case one needs to provide the possibility of empty values when `sex` is equal to `male` as well, add the `empty: True` statement inside the `if`:
+
+```yaml
+sex:
+   empty: True
+lifestage:
+   empty: True
+   if:
+       sex:
+           allowed: [male]
+       allowed: [adult]
+       empty: True
+```
