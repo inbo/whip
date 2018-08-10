@@ -84,15 +84,43 @@ Hence, development of tools based on these specifications can be split into two 
 ## Remarks
 
 ### Order
-Testing some of these specifications do rely on the presence or properties of other specifications. This mainly involves the usage of the `empty: True` validation test, as this ccompares to the other tests as an `or`: either the value is `empty` OR it is not empty and all other tests need to be checked. 
+Testing some of these specifications do rely on the presence or properties of other specifications. This mainly involves the usage of the `empty: True` validation test, as this compares to the other tests as an `or`: either the value is `empty` OR it is not empty and all other tests need to be checked. 
 
 In other words, the priority in the order of testing the different specifications, is as follows:
 
 **empty > other specifications** where other tests are aborted when the value is empty.
 
 The `if` and `delimitedvalues` specifications are providing an environment for which the specification need to be tested multiple times (taking into account this order for the individual tests):
-* `if: First, the testing of the condition (does the *if* condition apply?) and secondly - if true - , the evaluation of the conditional specification of the term itself
+* `if`: First, the testing of the condition (does the *if* condition apply?) and secondly - if true - , the evaluation of the conditional specification of the term itself.
 * `delimitedvalues`: The defined specifications is evaluated for each of the individual terms as split by the delimiter, taking into account the order for each test individually.
+
+In order to tackle the combination of `empty` and `if` statements, the implementation need to take into account the following:
+* a general `empty: True` defines: *values of this field are allowed to be empty* for which the scope can be decreased to *some values of this field - considering the given conditions - are allowed to be empty*. In practice, this means that `empty: True` inside an `if` condition is only possible when a general `empt: True` is present as well. Hence, the following should give a `SchemaError`:
+
+```
+sex:
+    empty: True
+lifestage:
+    if:
+        sex:
+            allowed: [male]
+        allowed: [adult]
+        empty: True
+```
+
+Whereas this schema is correct:
+
+```
+sex:
+    empty: True
+lifestage:
+    empty: True  # as the empty rule has priority, this is required to enable empty values inside the if-loop
+    if:
+        sex:
+            allowed: [male]
+        allowed: [adult]
+        empty: True
+```
 
 ### min/max combination
 In order to keep the number of rules to a minimum,  it is decided to not have a separate test `equals`, as this can easily be achieved by combining a `min` and `max`  test:
