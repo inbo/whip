@@ -359,6 +359,7 @@ Makes specifications conditional. This means that they are only verified if anot
 
 ```yaml
 lifestage:
+  empty: True
   if:
     - sex:
         allowed: [male, female] # If sex is "male" or "female"...
