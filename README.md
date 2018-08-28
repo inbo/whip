@@ -13,15 +13,19 @@ my_date_field:
 
 ## Documentation
 
-* [Syntax](docs/syntax.md)
+- [Syntax](docs/syntax.md)
+
+## Implementations
+
+You can test whip specifications with [pywhip](https://inbo.github.io/pywhip/).
 
 ## Contributors
 
-* [Peter Desmet](https://github.com/peterdesmet)
-* [Stijn Van Hoey](https://github.com/stijnvanhoey)
-* [Christian Gendreau](https://github.com/cgendreau)
-* [Dimitri Brosens](https://github.com/DimEvil)
-* [John Wieczorek](https://github.com/tucotuco)
+- [Peter Desmet](https://github.com/peterdesmet)
+- [Stijn Van Hoey](https://github.com/stijnvanhoey)
+- [Christian Gendreau](https://github.com/cgendreau)
+- [Dimitri Brosens](https://github.com/DimEvil)
+- [John Wieczorek](https://github.com/tucotuco)
 
 ## License
 
