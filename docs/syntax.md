@@ -349,7 +349,7 @@ list_of_names:
   empty: true               # The whole field can be empty...
   delimitedvalues:
     delimiter: ' | '        # .. but using this delimiter, delimited values 
-                            # cannot be empty, since "empty: True" is implied 
+                            # cannot be empty, since "empty: False" is implied 
                             # by default.
 ```
 
