@@ -359,6 +359,7 @@ Makes specifications conditional. This means that they are only verified if anot
 
 ```yaml
 lifestage:
+  empty: True
   if:
     - sex:
         allowed: [male, female] # If sex is "male" or "female"...
@@ -413,3 +414,58 @@ province:
       allowed: 'West Flanders' # Only then it is tested if province is 
                             # "West Flanders".
 ```
+
+Note: The usage of an `if` valdiation will further differentiate a general `empty: True` statement for that specific field. For example, according to the following whip specification, the field `lifestage` can not be empty when the field `sex` is equal to `male` (the only valid option is `adult`):
+
+```yaml
+sex:
+   empty: True
+lifestage:
+   empty: True
+   if:
+       sex:
+           allowed: [male]
+       allowed: [adult]
+```
+
+For all other values (not affected by the condition of the `sex` field), the value can be empty. In case one needs to provide the possibility of empty values when `sex` is equal to `male` as well, add the `empty: True` statement inside the `if`:
+
+```yaml
+sex:
+   empty: True
+lifestage:
+   empty: True
+   if:
+       sex:
+           allowed: [male]
+       allowed: [adult]
+       empty: True
+```
+
+The `empty` rule always gets priority over all other specifications and each term without an `empty` specification gets virtually an `empty: False` statement (remember, empty values are not allowed by default). 
+
+Check the first example:
+
+```yaml
+lifestage:
+  empty: True
+  if:
+    - sex:
+        allowed: [male, female] # If sex is "male" or "female"...
+      allowed: adult        # ... then lifestage needs to be "adult".
+    - sex:
+        allowed: ''         # If sex is empty (and nothing else)...
+        empty: True
+      allowed: ''           # ... then lifestage needs to be empty.
+      empty: True
+```
+
+We can read the specification as follows:
+
+>The value of `lifestage` can be empty (general `empty: True` specification). Next, the `if` statement differentiates the possibility of empty values:
+>
+>1. When `sex` is equal to `male` or `female`, lifestage can not be empty, but needs to be `adult` (and nothing else)
+>2. When `sex` is empty, `lifestage` need to be empty as well (and nothing else)
+
+
+
